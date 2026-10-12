@@ -1,0 +1,194 @@
+### `lib/main.dart`
+
+dart
+```
+
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: const CounterPage(),
+    );
+  }
+}
+
+class CounterPage extends StatefulWidget {
+  const CounterPage({super.key});
+
+  @override
+  State<CounterPage> createState() => _CounterPageState();
+}
+
+class _CounterPageState extends State<CounterPage> {
+  int _counter = 0;
+
+  void _incrementCounter() {
+    debugPrint('Increment button tapped');
+
+    setState(() {
+      _counter++;
+    });
+  }
+
+  void _decrementCounter() {
+    debugPrint('Decrement button tapped');
+
+    setState(() {
+      if (_counter > 0) {
+        _counter--;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Counter Application'),
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Current Counter Value',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 20),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    '$_counter',
+                    key: const ValueKey('counterValue'),
+                    maxLines: 1,
+                    style: const TextStyle(
+                      fontSize: 72,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 30),
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 16,
+                runSpacing: 12,
+                children: [
+                  ElevatedButton.icon(
+                    key: const ValueKey('decrementButton'),
+                    onPressed: _decrementCounter,
+                    icon: const Icon(Icons.remove),
+                    label: const Text('Decrement'),
+                  ),
+                  ElevatedButton.icon(
+                    key: const ValueKey('incrementButton'),
+                    onPressed: _incrementCounter,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Increment'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+### `test/widget_test.dart`
+
+dart
+```
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:counter_lab/main.dart';
+import 'package:flutter/material.dart';
+
+void main() {
+  group('Counter Application Tests', () {
+    testWidgets('Initial counter value is zero', (tester) async {
+      await tester.pumpWidget(const MyApp());
+
+      expect(find.text('0'), findsOneWidget);
+    });
+
+    testWidgets('Counter increments when button is tapped',
+        (tester) async {
+      await tester.pumpWidget(const MyApp());
+
+      await tester.tap(
+        find.byKey(const ValueKey('incrementButton')),
+      );
+      await tester.pump();
+
+      expect(find.text('1'), findsOneWidget);
+    });
+
+    testWidgets('Counter decrements when button is tapped',
+        (tester) async {
+      await tester.pumpWidget(const MyApp());
+
+      await tester.tap(
+        find.byKey(const ValueKey('incrementButton')),
+      );
+      await tester.pump();
+
+      await tester.tap(
+        find.byKey(const ValueKey('incrementButton')),
+      );
+      await tester.pump();
+
+      await tester.tap(
+        find.byKey(const ValueKey('decrementButton')),
+      );
+      await tester.pump();
+
+      expect(find.text('1'), findsOneWidget);
+    });
+
+    testWidgets('Counter never goes below zero', (tester) async {
+      await tester.pumpWidget(const MyApp());
+
+      await tester.tap(
+        find.byKey(const ValueKey('decrementButton')),
+      );
+      await tester.pump();
+
+      expect(find.text('0'), findsOneWidget);
+    });
+
+    testWidgets('Counter text displays correctly at 10',
+        (tester) async {
+      await tester.pumpWidget(const MyApp());
+
+      for (int i = 0; i < 10; i++) {
+        await tester.tap(
+          find.byKey(const ValueKey('incrementButton')),
+        );
+        await tester.pump();
+      }
+
+      expect(find.text('10'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  });
+}
